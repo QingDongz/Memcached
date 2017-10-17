@@ -3,7 +3,8 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:p="http://www.springframework.org/schema/p"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
 
     <!--扫描控制层注解-->
     <context:component-scan base-package="cn.summerwaves.controller"/>
@@ -22,5 +23,12 @@
         <property name="suffix" value=".jsp"/>
     </bean>
 
+    <bean id="ControllerLogger" class="cn.summerwaves.logger.ControllerLogger"/>
 
+    <aop:config>
+        <aop:aspect ref="ControllerLogger">
+            <aop:before method="beforeTime" pointcut="execution(* cn.summerwaves.controller.InterceptorController.toTPS())"/>
+            <aop:after method="afterTime" pointcut="execution(* cn.summerwaves.controller.InterceptorController.toTPS())"/>
+        </aop:aspect>
+    </aop:config>
 </beans>

@@ -17,6 +17,7 @@ import java.util.concurrent.TimeoutException;
 public class XMemcachedUtil {
     @Autowired
     private XMemcachedClientBuilder memcachedClientBuilder;
+
     @Autowired
     private MemcachedClient memcachedClient;
 

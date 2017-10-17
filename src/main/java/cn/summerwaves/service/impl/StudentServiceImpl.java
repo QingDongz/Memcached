@@ -23,6 +23,7 @@ public class StudentServiceImpl implements IStudentService {
 
     @Override
     public List<Student> selectThreeStudent() {
+        long start1 = System.currentTimeMillis();
         Student student1 = (Student) xMemcachedUtil.getCache("student1");
         Student student2 = (Student) xMemcachedUtil.getCache("student2");
         Student student3 = (Student) xMemcachedUtil.getCache("student3");
@@ -31,14 +32,24 @@ public class StudentServiceImpl implements IStudentService {
             students.add(student1);
             students.add(student2);
             students.add(student3);
-            logger.error("使用缓存");
+            long end1 = System.currentTimeMillis();
+            logger.error("缓存响应时间为：" + (end1 - start1));
             return students;
         }
-        logger.error("使用数据库");
-        Student studentFromDB1 = studentDao.selectOneStudent("10");
-        Student studentFromDB2 = studentDao.selectOneStudent("11");
-        Student studentFromDB3 = studentDao.selectOneStudent("12");
-
+        long start2 = System.currentTimeMillis();
+        Student studentFromDB1 = studentDao.selectOneStudent("1");
+        Student studentFromDB2 = studentDao.selectOneStudent("2");
+        Student studentFromDB3 = studentDao.selectOneStudent("3");
+        if (studentFromDB1 == null && studentFromDB2 == null && studentFromDB3 == null) {
+            Student student = new Student();
+            student.setName("test");
+            xMemcachedUtil.addCache("student1", 60 * 5, student);
+            xMemcachedUtil.addCache("student2", 60 * 5, student);
+            xMemcachedUtil.addCache("student3", 60 * 5, student);
+            return null;
+        }
+        long end2 = System.currentTimeMillis();
+        logger.error("数据库响应时间为：" + (end2 - start2));
         xMemcachedUtil.addCache("student1",3600,studentFromDB1);
         xMemcachedUtil.addCache("student2",3600,studentFromDB2);
         xMemcachedUtil.addCache("student3",3600,studentFromDB3);
@@ -51,6 +62,7 @@ public class StudentServiceImpl implements IStudentService {
 
     @Override
     public List<Student> selectThreeStudentFromDB() {
+        logger.error("");
         Student studentsFromDB1 = studentDao.selectOneStudent("10");
         Student studentsFromDB2 = studentDao.selectOneStudent("12");
         Student studentsFromDB3 = studentDao.selectOneStudent("13");
